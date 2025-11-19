@@ -4,13 +4,13 @@ phases:
   pre_build:
     commands:
       - echo Installing dependencies...
-      - mkdir -p package  # Asegura que package/ exista
+      - mkdir -p package
       - pip install -r requirements.txt -t package/
   build:
     commands:
       - echo Preparing application files...
-      - cp -r * package/
-      - cp -r .[^.]* package/ || true  # copia archivos ocultos (.ebextensions, .env, etc.)
+      # Copia todo excepto la carpeta package/ misma
+      - rsync -av --exclude=package . package/
       - cd package
       - zip -r ../deploy.zip .
       - cd ..
