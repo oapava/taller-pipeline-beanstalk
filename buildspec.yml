@@ -3,7 +3,17 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - pip install -r requirements.txt
+      - echo Installing dependencies...
+      - pip install -r requirements.txt -t package/
+  build:
+    commands:
+      - echo Preparing application files...
+      - cp -r * package/
+      - cp -r .[^.]* package/ || true  # copia archivos ocultos como .ebextensions
+      - cd package
+      - zip -r ../deploy.zip .
+      - cd ..
+
 artifacts:
   files:
-    - '**/*'
+    - deploy.zip
