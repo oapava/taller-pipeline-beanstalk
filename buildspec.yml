@@ -3,18 +3,22 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Installing dependencies...
-      - mkdir -p package
-      - pip install -r requirements.txt -t package/
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 620734899798.dkr.ecr.us-east-1.amazonaws.com
+
   build:
     commands:
-      - echo Preparing application files...
-      # Copia todo excepto la carpeta package/ misma
-      - rsync -av --exclude=package . package/
-      - cd package
-      - zip -r ../deploy.zip .
-      - cd ..
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t pyton_app .
+      - docker tag pyton_app:latest 620734899798.dkr.ecr.us-east-1.amazonaws.com/pyton_app:latest
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push 620734899798.dkr.ecr.us-east-1.amazonaws.com/pyton_app:latest
 
 artifacts:
   files:
-    - deploy.zip
+    - '**/*'
