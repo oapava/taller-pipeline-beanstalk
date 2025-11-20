@@ -1,3 +1,4 @@
+import os
 import funtions as f
 from flask import Flask, jsonify
 
@@ -13,6 +14,6 @@ def heroe(id):
     return jsonify(data[id])
 
 if __name__ == "__main__":
-    application.run(port = 5000, debug = True)
+    port = int(os.environ.get("PORT", 8080))
+    application.run(host="0.0.0.0", port=port)
 
-    
